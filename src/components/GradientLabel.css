@@ -1,0 +1,31 @@
+
+.gradient-label {
+   text-align: center;
+   color: white;
+   font-size: 30px;
+   font-weight: bold;
+   user-select: none;
+   display: flex;
+   white-space: nowrap;
+ }
+ .gradient-label > .gradient-label-center {
+   background-color: rgba(12, 119, 114, 0.9);
+   padding-left: 0.5em;
+   padding-right: 0.5em;
+ }
+ .gradient-label > .gradient-label-right {
+   width: 1em;
+   background-image: linear-gradient(
+       to left,
+       rgba(0, 0, 0, 0),
+       rgba(12, 119, 114, 0.9)
+   );
+ }
+ .gradient-label > .gradient-label-left {
+   width: 1em;
+   background-image: linear-gradient(
+       to right,
+       rgba(0, 0, 0, 0),
+       rgba(12, 119, 114, 0.9)
+   );
+ }

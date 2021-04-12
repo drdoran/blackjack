@@ -1,0 +1,26 @@
+.player-deck {
+  display: flex;
+  align-items: inherit;
+  justify-content: left;
+  flex-direction: row;
+  padding: 5px;
+  height: 100%;
+ }
+ .player-deck > .cards {
+  display: flex;
+  align-items: inherit;
+  justify-content: left;
+  flex-direction: row;
+  padding: 5px;
+  height: 100%;
+ }
+ .player-deck > .cards > .card {
+  margin: 5px;
+ }
+ .score {
+   flex-grow: 1;
+   display: flex;
+   justify-content: center;
+   height: 196px;
+   align-items: center;
+ }

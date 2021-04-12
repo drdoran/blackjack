@@ -1,0 +1,36 @@
+.gamearea {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-image: radial-gradient(#00db92 1px, #fffdf1 1px);
+  background-size: 20px 20px;
+}
+.gamearea > div {
+  height: 100px;
+  flex: 33.33%;
+}
+.gamearea > .center {
+  display: flex;
+  justify-content: right;
+  padding: 10px;
+}
+
+.gamearea > .top {
+  align-items: flex-end;
+}
+
+.gamearea > .bottom {
+  align-items: flex-start;
+}
+
+.gamearea > .center > .status {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  height: 100%;
+  align-items: center;
+  font-size: 30px;
+  font-weight: bold;
+  color: rgb(21, 116, 111);
+}
