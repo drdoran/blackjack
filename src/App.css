@@ -24,11 +24,18 @@
   align-items: flex-start;
 }
 
-.gamearea > .center > .status {
+.gamearea > .center > .left {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  height: 100%;
+}
+
+.gamearea > .center > .left > .status {
   flex-grow: 1;
   display: flex;
   justify-content: center;
-  height: 100%;
   align-items: center;
   font-size: 30px;
   font-weight: bold;
