@@ -21,7 +21,7 @@
 }
 
 .gamearea > .bottom {
-  align-items: flex-start;
+  align-items: center;
 }
 
 .gamearea > .center > .left {

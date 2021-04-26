@@ -4,7 +4,7 @@
   justify-content: left;
   flex-direction: row;
   padding: 5px;
-  height: 100%;
+  height: calc(100%-5px);
  }
  .player-deck > .cards {
   display: flex;
@@ -12,7 +12,7 @@
   justify-content: left;
   flex-direction: row;
   padding: 5px;
-  height: 100%;
+  height: calc(100% - 5px);
  }
  .player-deck > .cards > .card {
   margin: 5px;

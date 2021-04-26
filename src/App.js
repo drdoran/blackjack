@@ -2,28 +2,28 @@ import React from 'react';
 import './App.css';
 import Deck from './components/Deck';
 import PlayerDeck from './components/PlayerDeck';
-import Blackjack from './Blackjack';
+import Blackjack from './blackjack/Blackjack';
 import PlayerBet from './components/PlayerBet';
+import { Player } from './blackjack/Constants';
 class App extends React.Component {
   constructor(props) {
     super(props);
 
     this.blackjack = new Blackjack();
-    this.blackjack.round.deal();
     this.observe = true;
-    var state = this.blackjack.getObserverView();
+    var state = this.blackjack.toSnapshot();
 
     this.state = {
-      playerTop: state.round.player1Deck,
+      playerTop: state.round.players[Player.A].hand,
       playerTopBet: {
-        game: state.player1Bet,
-        round: state.round.player1Bet
+        game: state.players[Player.A].loss,
+        round: state.round.players[Player.A].bet
       },
       deck: state.round.deck,
-      playerBottom: state.round.player2Deck,
+      playerBottom: state.round.players[Player.B].hand,
       playerBottomBet: {
-        game: state.player2Bet,
-        round: state.round.player2Bet
+        game: state.players[Player.B].loss,
+        round: state.round.players[Player.B].bet
       },
       status: "Press [ENTER] to begin"
     };
@@ -35,38 +35,39 @@ class App extends React.Component {
   handleKeyPress(event) {
     if (event.key === 'h') {
       if (!this.observe) {
-        if (!this.blackjack.round.canHit()) {
+        if (!this.canHit()) {
           this.setState({
             status: 'Cannot hit, must stay (j)...'
           });
           return;
         }
-        this.blackjack.round.hit();
-        var stateHit = this.blackjack.getObserverView();
+        var round = this.blackjack.round;
+        this.blackjack.hit();
         var newStatus = 'Presss [Enter] to proceed...';
-        if (this.blackjack.round.completed) {
-          var player1Win = this.blackjack.round.didPlayer1Win();
-          var player2Win = this.blackjack.round.didPlayer2Win();
-          if (!(player1Win || player2Win)) {
+        if (round.completed) {
+          var loser = this.blackjack.round.loser;
+          if (loser === null) {
             newStatus = 'Draw! Press [Enter] to proceed...'
-          } else if (player1Win) {
+          } else if (loser === Player.A) {
             newStatus = 'Top wins! [Enter] to proceed...'
           } else {
             newStatus = 'Bottom wins! [Enter] to proceed...'
           }
         }
 
+        var stateHit = this.blackjack.toSnapshot();
+
         this.setState({
-          playerTop: stateHit.round.player1Deck,
+          playerTop: stateHit.round.players[Player.A].hand,
           playerTopBet: {
-            game: stateHit.player1Bet,
-            round: stateHit.round.player1Bet
+            game: stateHit.players[Player.A].loss,
+            round: stateHit.round.players[Player.A].bet
           },
           deck: stateHit.round.deck,
-          playerBottom: stateHit.round.player2Deck,
+          playerBottom: stateHit.round.players[Player.B].hand,
           playerBottomBet: {
-            game: stateHit.player2Bet,
-            round: stateHit.round.player2Bet
+            game: stateHit.players[Player.B].loss,
+            round: stateHit.round.players[Player.B].bet
           },
           status: newStatus
         });
@@ -74,76 +75,68 @@ class App extends React.Component {
       }
     } else if (event.key === 'j') {
       if (!this.observe) {
-        this.blackjack.round.stay();
-        var stateStay = this.blackjack.getObserverView();
+        var round = this.blackjack.round;
+        this.blackjack.stay();
         var newStatus = 'Presss [Enter] to proceed...';
-        if (this.blackjack.round.completed) {
-          var player1Win = this.blackjack.round.didPlayer1Win();
-          var player2Win = this.blackjack.round.didPlayer2Win();
-          if (!(player1Win || player2Win)) {
+        if (round.completed) {
+          var loser = round.loser;
+          if (loser === null) {
             newStatus = 'Draw! Press [Enter] to proceed...'
-          } else if (player1Win) {
+          } else if (loser === Player.B) {
             newStatus = 'Top wins! [Enter] to proceed...'
           } else {
             newStatus = 'Bottom wins! [Enter] to proceed...'
           }
-        }        
+          var results = round.toSnapshot();
+          var stayState = this.blackjack.toSnapshot();
+          this.setState({
+            playerTop: results.players[Player.A].hand,
+            playerTopBet: {
+              game: stayState.players[Player.A].loss,
+              round: 0
+            },
+            playerBottom: results.players[Player.B].hand,
+            playerBottomBet: {
+              game: stayState.players[Player.B].loss,
+              round: 0
+            },
+          });
+        }
         this.setState({
-          playerTop: stateStay.round.player1Deck,
-          deck: stateStay.round.deck,
-          playerBottom: stateStay.round.player2Deck,
           status: newStatus
         });
         this.observe = true;
       }
     } else if (event.key === 'Enter') {
-      if (!this.blackjack.round.started) {
-        this.blackjack.round.deal();
-      }
-      if (this.observe && !this.blackjack.round.completed) {
+      if (this.observe && !this.blackjack.completed) {
         this.observe = false;
         var state;
-        if (this.blackjack.round.player1sTurn) {
-          state = this.blackjack.getPlayer1View();
-          this.setState({
-            playerTop: state.round.player1Deck,
-            deck: state.round.deck,
-            playerBottom: state.round.player2Deck,
-            status: "Top's Turn, hit (h) or stay (j)..."
-          });
+        var status;
+        if (this.blackjack.round.batter === Player.A) {
+          state = this.blackjack.toSnapshot(Player.A);
+          status = "Top's Turn, hit (h) or stay (j)...";
         } else {
-          state = this.blackjack.getPlayer2View();
-          this.setState({
-            playerTop: state.round.player1Deck,
-            playerTopBet: {
-              game: state.player1Bet,
-              round: state.round.player1Bet
-            },
-            deck: state.round.deck,
-            playerBottom: state.round.player2Deck,
-            playerBottomBet: {
-              game: state.player2Bet,
-              round: state.round.player2Bet
-            },
-            status: "Bottom's Turn, hit (h) or stay (j)..."
-          });
+          state = this.blackjack.toSnapshot(Player.B);
+          status = "Bottom's Turn, hit (h) or stay (j)...";
         }
-      } else if (this.blackjack.round.completed) {
-        this.blackjack.newRound();
-        var newRoundState = this.blackjack.getObserverView();
         this.setState({
-          playerTop: newRoundState.round.player1Deck,
+          playerTop: state.round.players[Player.A].hand,
           playerTopBet: {
-            game: newRoundState.player1Bet,
-            round: newRoundState.round.player1Bet
-          },
-          deck: newRoundState.round.deck,
-          playerBottom: newRoundState.round.player2Deck,
+            game: state.players[Player.A].loss,
+            round: state.round.players[Player.A].bet
+          },         
+          deck: state.round.deck,
+          playerBottom: state.round.players[Player.B].hand,
           playerBottomBet: {
-            game: newRoundState.player2Bet,
-            round: newRoundState.round.player2Bet
+            game: state.players[Player.B].loss,
+            round: state.round.players[Player.B].bet
           },
-          status: "Press [ENTER] to begin"
+          status: status
+        });
+
+      } else if (this.blackjack.completed) {
+        this.setState({
+          status: "GAME OVER"
         });
       }
     }
@@ -153,6 +146,10 @@ class App extends React.Component {
   }
   componentWillUnmount() {
     document.removeEventListener("keydown", this.handleKeyPress, false);
+  }
+
+  canHit() {
+    return this.blackjack.round.players[this.blackjack.round.batter].hand.reduce((a, b) => (a.value || 0) + (b.value || 0), 0) < 21;
   }
 
   render() {
