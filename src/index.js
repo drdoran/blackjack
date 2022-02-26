@@ -1,11 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
+import GameManager from './GameManager';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <GameManager />
   </React.StrictMode>,
   document.getElementById('root')
 );
