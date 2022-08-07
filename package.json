@@ -11,11 +11,15 @@
     "react-scripts": "4.0.3",
     "web-vitals": "^1.1.1"
   },
+  "devDependencies": {
+    "prompts": "^2.4.2"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "cli": "node src/index-cli.js"
   },
   "eslintConfig": {
     "extends": [
